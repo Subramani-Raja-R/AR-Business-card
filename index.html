@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  </head>
+  <body>
+    <a-scene
+      mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+      embedded
+    >
+      <a-assets>
+        <img id="about" src="./assets/about.png" />
+        <img id="portfolio-icon" src="./assets/portfolio.png" />
+        <img id="linkedin-icon" src="./assets/linkedln.png" />
+        <img id="github-icon" src="./assets/github.png" />
+        <img id="resume-icon" src="./assets/resume.png" />
+        <img id="namelogo" src="./assets/Namelogo.png" />
+
+        <video id="myVideo" muted autoPlay loop playsInline src="./assets/video.mp4"></video>
+</a-assets>
+
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <!-- About Card Background -->
+         <a-video
+          src="#myVideo"
+          width="1.75"
+          height="1"
+          position="0 0 0"
+        ></a-video>
+
+        <a-image
+          src="#about"
+          width="1.75"
+          height="1"
+          position="0 -1.10 0"
+        ></a-image>
+
+        <!-- Name & Title -->
+        <a-image
+          src="#namelogo"
+          width="1.89"
+          height="0.5"
+          position="1.9 0 0"
+        ></a-image>
+
+        <!-- Buttons -->
+        <a-image
+          src="#portfolio-icon"
+          position="1.9 -0.5 0.01"
+           width="1"
+            height="0.2475"
+          onclick="window.open('https://yourportfolio.com')"
+        ></a-image>
+        <a-image
+          src="#linkedin-icon"
+          position="1.9 -0.90 0.01"
+           width="1"
+          height="0.2475"
+          onclick="window.open('https://linkedin.com/in/yourusername')"
+        ></a-image>
+        <a-image
+          src="#github-icon"
+          position="1.9 -1.30 0.01"
+           width="1"
+            height="0.2475"
+          onclick="window.open('https://github.com/yourusername')"
+        ></a-image>
+        <a-image
+          src="#resume-icon"
+          position="0 -1.80 0.01"
+           width="1"
+            height="0.2475"
+          onclick="window.open('./assets/your_resume.pdf')"
+        ></a-image>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
