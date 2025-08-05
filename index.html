@@ -1,6 +1,6 @@
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width,user-scalable=no, initial-scale=1" />
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <style>
@@ -23,10 +23,10 @@
     </style>
   </head>
   <body>
-    <a-scene
+    <a-scene embedded
       mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
       color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
+      renderer="logarithmicDepthBuffer: true;"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
       embedded
