@@ -23,10 +23,10 @@
     </style>
   </head>
   <body>
-    <a-scene embedded
+    <a-scene
       mindar-image="imageTargetSrc: ./targets.mind; autoStart: true;"
       color-space="sRGB"
-      renderer="logarithmicDepthBuffer: true;"
+      renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: false"
       embedded
