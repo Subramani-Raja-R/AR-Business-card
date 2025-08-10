@@ -1,39 +1,89 @@
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1,user-scalable=no"
+    />
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-     <script>
-    AFRAME.registerComponent('open-link', {
-      schema: { url: { type: 'string' } },
-      init: function () {
-        const open = () => window.open(this.data.url, '_blank');
-        this.el.addEventListener('click', open);
-        this.el.addEventListener('touchstart', open); // mobile support
-      }
-    });
-  </script>
+
+    <script>
+      // Open link component
+      AFRAME.registerComponent("open-link", {
+        schema: { url: { type: "string" } },
+        init: function () {
+          const open = () => {
+            let link = this.data.url;
+            if (!link.startsWith("http")) link = "https://" + link;
+            window.open(link, "_blank");
+          };
+          this.el.addEventListener("click", open);
+          this.el.addEventListener("touchstart", open);
+        },
+      });
+
+      // Fixed sequential animation with hide-before-start
+      AFRAME.registerComponent("chain-animate", {
+        schema: {
+          from: { type: "string" },
+          to: { type: "vec3" },
+          dur: { type: "number", default: 1200 },
+        },
+        init: function () {
+          const el = this.el;
+          const data = this.data;
+
+          // Start hidden
+          el.setAttribute("visible", false);
+
+          const startAnim = (pos) => {
+            el.setAttribute("visible", true);
+            el.setAttribute("position", pos);
+            el.setAttribute("animation__move", {
+              property: "position",
+              from: `${pos.x} ${pos.y} ${pos.z}`,
+              to: `${data.to.x} ${data.to.y} ${data.to.z}`,
+              dur: data.dur,
+              easing: "easeOutCubic",
+            });
+          };
+
+          const resetPosition = () => {
+            el.setAttribute("visible", false);
+            el.removeAttribute("animation__move");
+          };
+
+          if (!data.from) {
+            // First element starts when marker found
+            el.sceneEl.addEventListener("targetFound", () => {
+              startAnim({ x: 0, y: 0, z: 0 });
+            });
+          } else {
+            const fromEl = document.querySelector(data.from);
+            fromEl.addEventListener("animationcomplete__move", () => {
+              const pos = fromEl.getAttribute("position");
+              startAnim({ x: pos.x, y: pos.y, z: pos.z });
+            });
+          }
+
+          // Hide again when marker lost
+          el.sceneEl.addEventListener("targetLost", resetPosition);
+        },
+      });
+    </script>
+
     <style>
-      html, body {
+      html,
+      body {
         margin: 0;
         padding: 0;
         width: 100vw;
         height: 100vh;
         overflow: hidden;
       }
-      a-scene {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100vw !important;
-        height: 100vh !important;
-        z-index: 0;
-      }
       .a-enter-vr-button {
-    display: none !important;
-  }
+        display: none !important;
+      }
     </style>
   </head>
   <body>
@@ -52,87 +102,78 @@
         <img id="github-icon" src="./assets/github.png" />
         <img id="resume-icon" src="./assets/resume.png" />
         <img id="namelogo" src="./assets/Namelogo.png" />
-<!--         <video id="myVideo" muted autoPlay loop playsInline src="./assets/video.mp4"></video> -->
       </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"
+      <a-camera
+        position="0 0 0"
+        look-controls="enabled: false"
         raycaster="objects: .clickable; far: 1000"
-          cursor="fuse: false; rayOrigin: mouse">
-<!--         <a-cursor
-        rayOrigin="mouse"
-        raycaster="objects: .clickable; far: 1000; interval: 100"
-        fuse="false"
-        material="color: white; shader: flat"
-        ></a-cursor> -->
-      </a-camera>
+        cursor="fuse: false; rayOrigin: mouse"
+      ></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 0" >
-        <a-image
-          src="#about"
-          width="1"
-          height="0.571"
-          position="-0.15 -0.65 0"
-        ></a-image>
-
+      <a-entity mindar-image-target="targetIndex: 0">
+        <!-- 1: Name Logo -->
         <a-image
           src="#namelogo"
+          id="namelogo-obj"
           width="1"
           height="0.212"
-          position="1 0 0"
+          chain-animate="to: 1.2 0 0"
         ></a-image>
 
+        <!-- 2: About -->
         <a-image
-          id="btn-portfolio"
+          src="#about"
+          id="about-obj"
+          width="1"
+          height="0.571"
+          chain-animate="to: 0 -0.65 0"
+        ></a-image>
+
+        <!-- 3: Resume -->
+        <a-image
+          src="#resume-icon"
+          id="resume-obj"
+          width="1"
+          height="0.2475"
+          class="clickable"
+          open-link="url: https://github.com/Subramani-Raja-R"
+          chain-animate="from: #about-obj; to: 0 -1.12 0.01"
+        ></a-image>
+
+        <!-- 4: Portfolio -->
+        <a-image
           src="#portfolio-icon"
-          position="1 -0.40 0.01"
+          id="portfolio-obj"
           width="1"
           height="0.2475"
           class="clickable"
           open-link="url: https://subramani-raja.vercel.app"
+          chain-animate="from: #namelogo-obj; to: 1.2 -0.40 0.01"
         ></a-image>
 
+        <!-- 5: LinkedIn -->
         <a-image
-          id="btn-linkedin"
           src="#linkedin-icon"
-          position="1 -0.70 0.01"
+          id="linkedin-obj"
           width="1"
           height="0.2475"
           class="clickable"
-        open-link="url: www.linkedin.com/in/sraja04"
+          open-link="url: https://www.linkedin.com/in/sraja04"
+          chain-animate="from: #namelogo-obj; to: 1.2 -0.70 0.01"
         ></a-image>
 
+        <!-- 6: GitHub -->
         <a-image
-          id="btn-github"
           src="#github-icon"
-          position="1 -1.00 0.01"
+          id="github-obj"
           width="1"
           height="0.2475"
           class="clickable"
-        open-link="url: https://github.com/Subramani-Raja-R"
-        ></a-image>
-
-        <a-image
-          id="btn-resume"
-          src="#resume-icon"
-          position="-0.15 -1.12 0.01"
-          width="1"
-          height="0.2475"
-          class="clickable"
-        open-link="url: https://github.com/Subramani-Raja-R"
+          open-link="url: https://github.com/Subramani-Raja-R"
+          chain-animate="from: #namelogo-obj; to: 1.2 -1.00 0.01"
         ></a-image>
       </a-entity>
     </a-scene>
-
-    <script>
-      // Handle screen resize on orientation change
-      window.addEventListener("orientationchange", () => {
-        setTimeout(() => {
-          const scene = document.querySelector("a-scene");
-          if (scene && scene.resize) scene.resize();
-        }, 500);
-      });
-
-      
-    </script>
   </body>
 </html>
