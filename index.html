@@ -5,13 +5,13 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <script>
+     <script>
     AFRAME.registerComponent('open-link', {
       schema: { url: { type: 'string' } },
       init: function () {
-        this.el.addEventListener('click', () => {
-          window.open(this.data.url, '_blank');
-        });
+        const open = () => window.open(this.data.url, '_blank');
+        this.el.addEventListener('click', open);
+        this.el.addEventListener('touchstart', open); // mobile support
       }
     });
   </script>
