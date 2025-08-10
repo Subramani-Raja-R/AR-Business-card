@@ -55,13 +55,15 @@
 <!--         <video id="myVideo" muted autoPlay loop playsInline src="./assets/video.mp4"></video> -->
       </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false">
-        <a-cursor
+      <a-camera position="0 0 0" look-controls="enabled: false"
+        raycaster="objects: .clickable; far: 1000"
+          cursor="fuse: false; rayOrigin: mouse">
+<!--         <a-cursor
         rayOrigin="mouse"
         raycaster="objects: .clickable; far: 1000; interval: 100"
         fuse="false"
         material="color: white; shader: flat"
-        ></a-cursor>
+        ></a-cursor> -->
       </a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0" >
